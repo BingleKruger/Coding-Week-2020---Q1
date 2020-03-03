@@ -3,7 +3,7 @@ pragma solidity >=0.5.0;
 import "../node_modules/openzeppelin-solidity/contracts/token/ERC721/ERC721Full.sol";
 
 //Non-fungible token
-contract CoShoe is ERC721Full {
+contract CoShoe {
     struct Shoe {
         address owner;
         string name;
@@ -11,7 +11,7 @@ contract CoShoe is ERC721Full {
         bool sold;
     }
 
-    //need to convert to wei, can use uint64 to store the wei value, can not use smaller uint type
+    //need to convert to wei, can use uint64 to store the wei value
     uint64 price = (1 ether) / 2;
 
     //var defined as shoesSold in c. but later referred to as soldShoes? Assume first is correct
@@ -19,14 +19,10 @@ contract CoShoe is ERC721Full {
 
     Shoe[] public shoes;
 
-    address public minter;
-    mapping(address => uint256) public balances;
-
-    //Mint 100 CoShoe tokens --->>> Out of gas error when trying to mint large amounts
-    constructor() public ERC721Full("CoShoe token", "CS") {
-        for (uint8 i = 0; i < 20; i++) {
+    //Mint 100 CoShoe tokens
+    constructor() public {
+        for (uint8 i = 0; i < 100; i++) {
             shoes.push(Shoe(msg.sender, "", "", false));
-            _mint(msg.sender, i);
         }
     }
 
@@ -41,9 +37,9 @@ contract CoShoe is ERC721Full {
         shoesSold++;
     }
 
-    function checkPurchases() public view returns (bool[] memory) {
-        bool[] memory purchases;
-        for (uint8 i = 0; i <= uint8(shoes.length); i++) {
+     function checkPurchases() public view returns (bool[] memory) {
+        bool[] memory purchases = new bool[](shoes.length);
+        for (uint8 i = 0; i < uint8(shoes.length); i++) {
             if (shoes[i].owner == msg.sender) {
                 purchases[i] = true;
             }
@@ -51,12 +47,12 @@ contract CoShoe is ERC721Full {
         return purchases;
     }
 
-    function numberCoShoe() external view returns (uint8) {
-        return uint8(shoes.length);
-    }
-
     function numberShoesSold() external view returns (uint8) {
         return shoesSold;
+    }
+
+    function numShoes() external view returns (uint) {
+        return shoes.length;
     }
 
 }

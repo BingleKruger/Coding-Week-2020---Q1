@@ -14,8 +14,8 @@ contract('CoShoe', function (accounts) {
 
     // first test:
     it('Should mint 100 tokens on deployment', async function () {
-        let supply = await CoShoeInstance.totalSupply()
-        assert.equal(supply.toNumber(), 20, "Problem minting CoShoe tokens")
+        let shoeCount = await CoShoeInstance.numShoes()
+        assert.equal(shoeCount, 100, "Problem minting CoShoe tokens")
     })
 
     // second test:
@@ -35,5 +35,17 @@ contract('CoShoe', function (accounts) {
         await truffleAssert.reverts(CoShoeInstance.buyShoe("Bingle", "bingle.com/coolpicture.jpg", { from: accounts[1], value: web3.utils.toWei('0.4', 'ether') }))
     })
 
+     // fourth test:
+     it('checkPurchases returns correct number of trues', async function () {
+        await CoShoeInstance.buyShoe("Bingle", "bingle.com/coolpicture.jpg", { from: accounts[1], value: web3.utils.toWei('0.5', 'ether') })
+        let _boolPurch = await CoShoeInstance.checkPurchases({from: accounts[1]})
+        var numPurch = 0
+        for (i = 0; i < _boolPurch.length; i++) {
+            if (_boolPurch[i] == true) {
+                numPurch++;
+            }
+        }
+        assert.equal(numPurch, 1, "checkPurchases does not return correct number of trues")
+    })
 
 })
